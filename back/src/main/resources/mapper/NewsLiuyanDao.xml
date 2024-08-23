@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.NewsLiuyanDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.news_id as newsId
+        ,a.yonghu_id as yonghuId
+        ,a.news_liuyan_text as newsLiuyanText
+        ,a.insert_time as insertTime
+        ,a.reply_text as replyText
+        ,a.update_time as updateTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.NewsLiuyanView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,news.news_name as newsName
+        ,news.news_uuid_number as newsUuidNumber
+        ,news.news_photo as newsPhoto
+        ,news.news_file as newsFile
+        ,news.news_video as newsVideo
+        ,news.zan_number as zanNumber
+        ,news.cai_number as caiNumber
+        ,news.news_types as newsTypes
+        ,news.news_erji_types as newsErjiTypes
+        ,news.news_clicknum as newsClicknum
+        ,news.news_content as newsContent
+        ,news.shangxia_types as shangxiaTypes
+        ,yonghu.yonghu_uuid_number as yonghuUuidNumber
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_photo as yonghuPhoto
+        ,yonghu.yonghu_email as yonghuEmail
+        ,yonghu.jinyong_types as jinyongTypes
+
+        FROM news_liuyan  a
+        left JOIN news news ON a.news_id = news.id
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.newsId != null and params.newsId != ''">
+                and (
+                    a.news_id = #{params.newsId}
+                )
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and (
+                    a.yonghu_id = #{params.yonghuId}
+                )
+            </if>
+            <if test=" params.newsLiuyanText != '' and params.newsLiuyanText != null and params.newsLiuyanText != 'null' ">
+                and a.news_liuyan_text like CONCAT('%',#{params.newsLiuyanText},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+            <if test=" params.replyText != '' and params.replyText != null and params.replyText != 'null' ">
+                and a.reply_text like CONCAT('%',#{params.replyText},'%')
+            </if>
+            <if test=" params.updateTimeStart != '' and params.updateTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.update_time) >= UNIX_TIMESTAMP(#{params.updateTimeStart}) ]]>
+            </if>
+            <if test=" params.updateTimeEnd != '' and params.updateTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.update_time) <= UNIX_TIMESTAMP(#{params.updateTimeEnd}) ]]>
+            </if>
+            <if test="params.updateTime != null and params.updateTime != ''">
+                and a.update_time = #{params.updateTime}
+            </if>
+
+                <!-- 判断新闻的id不为空 -->
+            <if test=" params.newsIdNotNull != '' and params.newsIdNotNull != null and params.newsIdNotNull != 'null' ">
+                and a.news_id IS NOT NULL
+            </if>
+            <if test=" params.newsName != '' and params.newsName != null and params.newsName != 'null' ">
+                and news.news_name like CONCAT('%',#{params.newsName},'%')
+            </if>
+            <if test=" params.newsUuidNumber != '' and params.newsUuidNumber != null and params.newsUuidNumber != 'null' ">
+                and news.news_uuid_number like CONCAT('%',#{params.newsUuidNumber},'%')
+            </if>
+            <if test=" params.newsVideo != '' and params.newsVideo != null and params.newsVideo != 'null' ">
+                and news.news_video like CONCAT('%',#{params.newsVideo},'%')
+            </if>
+            <if test="params.zanNumberStart != null  and params.zanNumberStart != '' ">
+                <![CDATA[  and news.zan_number >= #{params.zanNumberStart}   ]]>
+            </if>
+            <if test="params.zanNumberEnd != null  and params.zanNumberEnd != '' ">
+                <![CDATA[  and news.zan_number <= #{params.zanNumberEnd}   ]]>
+            </if>
+            <if test="params.zanNumber != null  and params.zanNumber != '' ">
+                and news.zan_number = #{params.zanNumber}
+            </if>
+            <if test="params.caiNumberStart != null  and params.caiNumberStart != '' ">
+                <![CDATA[  and news.cai_number >= #{params.caiNumberStart}   ]]>
+            </if>
+            <if test="params.caiNumberEnd != null  and params.caiNumberEnd != '' ">
+                <![CDATA[  and news.cai_number <= #{params.caiNumberEnd}   ]]>
+            </if>
+            <if test="params.caiNumber != null  and params.caiNumber != '' ">
+                and news.cai_number = #{params.caiNumber}
+            </if>
+            <if test="params.newsTypes != null  and params.newsTypes != ''">
+                and news.news_types = #{params.newsTypes}
+            </if>
+
+            <if test="params.newsErjiTypes != null  and params.newsErjiTypes != ''">
+                and news.news_erji_types = #{params.newsErjiTypes}
+            </if>
+
+            <if test="params.newsClicknumStart != null  and params.newsClicknumStart != '' ">
+                <![CDATA[  and news.news_clicknum >= #{params.newsClicknumStart}   ]]>
+            </if>
+            <if test="params.newsClicknumEnd != null  and params.newsClicknumEnd != '' ">
+                <![CDATA[  and news.news_clicknum <= #{params.newsClicknumEnd}   ]]>
+            </if>
+            <if test="params.newsClicknum != null  and params.newsClicknum != '' ">
+                and news.news_clicknum = #{params.newsClicknum}
+            </if>
+            <if test=" params.newsContent != '' and params.newsContent != null and params.newsContent != 'null' ">
+                and news.news_content like CONCAT('%',#{params.newsContent},'%')
+            </if>
+            <if test="params.shangxiaTypes != null  and params.shangxiaTypes != ''">
+                and news.shangxia_types = #{params.shangxiaTypes}
+            </if>
+
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(news.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(news.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+                <!-- 判断用户的id不为空 -->
+            <if test=" params.yonghuIdNotNull != '' and params.yonghuIdNotNull != null and params.yonghuIdNotNull != 'null' ">
+                and a.yonghu_id IS NOT NULL
+            </if>
+            <if test=" params.yonghuUuidNumber != '' and params.yonghuUuidNumber != null and params.yonghuUuidNumber != 'null' ">
+                and yonghu.yonghu_uuid_number like CONCAT('%',#{params.yonghuUuidNumber},'%')
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuEmail != '' and params.yonghuEmail != null and params.yonghuEmail != 'null' ">
+                and yonghu.yonghu_email like CONCAT('%',#{params.yonghuEmail},'%')
+            </if>
+            <if test="params.jinyongTypes != null  and params.jinyongTypes != ''">
+                and yonghu.jinyong_types = #{params.jinyongTypes}
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

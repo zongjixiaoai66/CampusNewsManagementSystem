@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.NewsDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.news_name as newsName
+        ,a.news_uuid_number as newsUuidNumber
+        ,a.news_photo as newsPhoto
+        ,a.news_file as newsFile
+        ,a.news_video as newsVideo
+        ,a.zan_number as zanNumber
+        ,a.cai_number as caiNumber
+        ,a.news_types as newsTypes
+        ,a.news_erji_types as newsErjiTypes
+        ,a.news_clicknum as newsClicknum
+        ,a.news_content as newsContent
+        ,a.shangxia_types as shangxiaTypes
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.NewsView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+
+        FROM news  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.newsName != '' and params.newsName != null and params.newsName != 'null' ">
+                and a.news_name like CONCAT('%',#{params.newsName},'%')
+            </if>
+            <if test=" params.newsUuidNumber != '' and params.newsUuidNumber != null and params.newsUuidNumber != 'null' ">
+                and a.news_uuid_number like CONCAT('%',#{params.newsUuidNumber},'%')
+            </if>
+            <if test=" params.newsVideo != '' and params.newsVideo != null and params.newsVideo != 'null' ">
+                and a.news_video like CONCAT('%',#{params.newsVideo},'%')
+            </if>
+            <if test="params.zanNumberStart != null and params.zanNumberStart != ''">
+                <![CDATA[  and a.zan_number >= #{params.zanNumberStart}   ]]>
+            </if>
+            <if test="params.zanNumberEnd != null and params.zanNumberEnd != ''">
+                <![CDATA[  and a.zan_number <= #{params.zanNumberEnd}   ]]>
+            </if>
+             <if test="params.zanNumber != null and params.zanNumber != ''">
+                and a.zan_number = #{params.zanNumber}
+             </if>
+            <if test="params.caiNumberStart != null and params.caiNumberStart != ''">
+                <![CDATA[  and a.cai_number >= #{params.caiNumberStart}   ]]>
+            </if>
+            <if test="params.caiNumberEnd != null and params.caiNumberEnd != ''">
+                <![CDATA[  and a.cai_number <= #{params.caiNumberEnd}   ]]>
+            </if>
+             <if test="params.caiNumber != null and params.caiNumber != ''">
+                and a.cai_number = #{params.caiNumber}
+             </if>
+            <if test="params.newsTypes != null and params.newsTypes != ''">
+                and a.news_types = #{params.newsTypes}
+            </if>
+            <if test="params.newsErjiTypes != null and params.newsErjiTypes != ''">
+                and a.news_erji_types = #{params.newsErjiTypes}
+            </if>
+            <if test="params.newsClicknumStart != null and params.newsClicknumStart != ''">
+                <![CDATA[  and a.news_clicknum >= #{params.newsClicknumStart}   ]]>
+            </if>
+            <if test="params.newsClicknumEnd != null and params.newsClicknumEnd != ''">
+                <![CDATA[  and a.news_clicknum <= #{params.newsClicknumEnd}   ]]>
+            </if>
+             <if test="params.newsClicknum != null and params.newsClicknum != ''">
+                and a.news_clicknum = #{params.newsClicknum}
+             </if>
+            <if test=" params.newsContent != '' and params.newsContent != null and params.newsContent != 'null' ">
+                and a.news_content like CONCAT('%',#{params.newsContent},'%')
+            </if>
+            <if test="params.shangxiaTypes != null and params.shangxiaTypes != ''">
+                and a.shangxia_types = #{params.shangxiaTypes}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>
